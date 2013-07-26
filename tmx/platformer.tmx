@@ -1,44 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="64" height="24" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="128" height="24" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="8-bit" tilewidth="32" tileheight="32">
   <image source="../tilesets/8-bit_mario.png" width="1024" height="1024"/>
-  <tile id="908">
+  <tile id="314">
    <properties>
     <property name="collisionType" value="platform"/>
-    <property name="physics:bounce" value="0"/>
     <property name="physics:enabled" value="true"/>
-    <property name="physics:shape" value="!json![-16,-16,16,-16]"/>
+    <property name="physics:shape" value="!json! [-16,-16, 16,-16]"/>
    </properties>
   </tile>
-  <tile id="909">
+  <tile id="315">
    <properties>
     <property name="collisionType" value="platform"/>
-    <property name="physics:bounce" value="0"/>
     <property name="physics:enabled" value="true"/>
-    <property name="physics:shape" value="!json![-16,-16,16,-16]"/>
+    <property name="physics:shape" value="!json! [-18,-16, 18,-16]"/>
    </properties>
   </tile>
-  <tile id="910">
+  <tile id="316">
    <properties>
     <property name="collisionType" value="platform"/>
-    <property name="physics:bounce" value="0"/>
     <property name="physics:enabled" value="true"/>
-    <property name="physics:shape" value="!json![-16,-16,16,-16]"/>
+    <property name="physics:shape" value="!json! [-16,-16, 16,-16]"/>
+   </properties>
+  </tile>
+  <tile id="442">
+   <properties>
+    <property name="collisionType" value="platform"/>
+    <property name="physics:enabled" value="true"/>
+    <property name="physics:shape" value="!json! [-16,-16, 16,-16]"/>
+   </properties>
+  </tile>
+  <tile id="443">
+   <properties>
+    <property name="collisionType" value="platform"/>
+    <property name="physics:enabled" value="true"/>
+    <property name="physics:shape" value="!json! [-18,-16, 18,-16]"/>
+   </properties>
+  </tile>
+  <tile id="444">
+   <properties>
+    <property name="collisionType" value="platform"/>
+    <property name="physics:enabled" value="true"/>
+    <property name="physics:shape" value="!json! [-16,-16, 16,-16]"/>
    </properties>
   </tile>
  </tileset>
- <layer name="layer_1" width="64" height="24">
-  <data encoding="base64" compression="zlib">
-   eJztllEOwyAIhul6693B7UDrTtLuLnMPJoaA+20x1ioJL8YKH/5QiYa1ZG4mejB/zrWzur5JdZdqr+3LuafXRLR4f0/2HC3Y6rk3758K/KH2S8U7QPhLaSTE3hI5WMZ2Qm8g/KU0gvCX1ufg38fvDP6JOfzxrEB6Ae2bVu5//bNvb8498UuayJn/kv5y5/P9hnvIL45xhB9d086S6n9EG+j9I/u0s6/Mn9KeBT/X3dn4U7E1VqmXkTNa4v/NDo1fOmvwY28PSSu1+LmO4zlgzc91cAZ+vhZ/X5qfv0V740/FHvy68X7tzXnNevMvDAwQfg==
-  </data>
- </layer>
- <layer name="overlay" width="64" height="24">
-  <data encoding="base64" compression="zlib">
-   eJzt1rENACAMA8Eo+y8Im0AFHSNEIncT2N1HAADQzciImdUr6qz7fTf+DwDwM62rdXkO2L4HXQ==
-  </data>
- </layer>
- <objectgroup name="objects" width="64" height="24">
+ <layer name="bkg2" width="128" height="24">
   <properties>
+   <property name="xParallax" value="0.5"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1rENgDAMRUEr+zewCUwINX2Co3+3gC09yXIVAAAAQB/HqDrH31vwtarL9c649W9nVRf9e9I/2w79/Q7z7NDf7ZhH/2z6Z9M/m/7Z9M+mfzb9s+kPsJ8HuT0zJA==
+  </data>
+ </layer>
+ <layer name="bkg" width="128" height="24">
+  <properties>
+   <property name="xParallax" value="0.75"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1csNgCAQQMEN/V+0E61QOzDhI+jOXAkbkkcgAgAAAMhiKxF7mX0KZjnu9mfn/u7Ud4zoP2ImY6zY3/vxnhX71+x3Z+r8pb8/p47+uemf24z+T3+1/u9pbVUzs3W91x7mtNB/Hfrnpn9u+gPkcgHTIFE+
+  </data>
+ </layer>
+ <layer name="layer_1" width="128" height="24">
+  <data encoding="base64" compression="zlib">
+   eJztl9txhDAMRU22rJBKQhpJDyQFZbcSSC8xH8w4Xkm+Nn6C74x+dv0AHenaKNXV1Y7mm1JfVnzfSj9VV1cbmgN7huo7ah1unM+eP4NSdx2Pwe8ZYwh9z1j7dO961qK5rzp+C/C/uvbeuxfsQYR/SY9IKdt/cvvDnvtVYBAz95QPIvxjeERMDz7LvRThn9qfc/E/s151XkYdb575aZn/nKD3WrinUc/4rvMy6fhIyN+8KyBnAXpunLX/c9ZSDv6LYxw3zzX2rPxzqhX+lCf43P8p/znrt8Em9Fyn+HNzP1/w2LQM/3N8hD/6G7cWVX8+3lDD966P0L6mxiFz0f5HxnFr18Q/5D0Qhd6/Xaqdv+S9MfjbvlMr/9Dz11U3tfOXcs+xpjwYWSMnf7SfzXEh/F2MXP9L+5fkv90dOP7UWiX4S94V0ncl+FP7+9RkK/yl+2cof2leSN8h/Pd5IzHftT4lir9PTR7hb/u42Uux+ds+kIO/dAZQOfbxi8kxD2VYkr/9mzk/NX+z9kK+SRH+kgfk5s/V4lX5S3tLOsLf9m4kOF6+/Lla7Pzz8bfZIcHxKsV/98wezzFeINYebEwXiD/t+eLP
+  </data>
+ </layer>
+ <layer name="overlay" width="128" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzt2NEJwCAQA9Dg/gu20O5RoeJtIeh7E1ySv0sAAAAAgJ1dLbnb6itY5avtu/0BAAAA2IBfZ/JU/vfQDvw6k7/yj8M7AJIJ3t0LGw==
+  </data>
+ </layer>
+ <objectgroup name="objects" width="128" height="24">
+  <properties>
+   <property name="!inactive!" value=""/>
    <property name="objects:_type" value="ground"/>
    <property name="objects:collisionType" value="platform"/>
    <property name="physics:bounce" value="0"/>
@@ -58,8 +93,8 @@
     <property name="destination" value="pipe2"/>
    </properties>
   </object>
-  <object x="0" y="704" width="2048"/>
-  <object x="1600" y="608" width="128"/>
+  <object x="0" y="704" width="4096"/>
+  <object x="1600" y="608" width="128" height="32"/>
   <object x="1696" y="352" width="96"/>
   <object x="1472" y="352" width="160"/>
   <object x="1408" y="448" width="96"/>
@@ -102,7 +137,7 @@
     <property name="physics:enabled" value="true"/>
    </properties>
   </object>
-  <object x="2048" y="0" height="768">
+  <object x="4096" y="0" height="768">
    <properties>
     <property name="collisionType" value="solid"/>
     <property name="physics:bounce" value="0.5"/>
@@ -117,5 +152,21 @@
    </properties>
   </object>
   <object x="1472" y="544" width="96"/>
+  <object x="2048" y="384" width="160" height="32"/>
+  <object x="2144" y="512" width="96" height="32"/>
+  <object x="2368" y="480" width="96" height="32"/>
+  <object x="2400" y="576" width="96" height="32"/>
+  <object x="2624" y="544" width="96" height="32"/>
+  <object x="2688" y="480" width="96" height="32"/>
+  <object x="2752" y="416" width="96" height="32"/>
+  <object x="3200" y="448" width="96" height="32"/>
+  <object x="3456" y="352" width="96" height="32"/>
+  <object x="3392" y="544" width="96" height="32"/>
+  <object x="3712" y="480" width="96" height="32"/>
+  <object x="3776" y="224" width="96" height="32"/>
+  <object x="3936" y="352" width="96" height="32"/>
+  <object x="3872" y="512" width="96" height="32"/>
+  <object x="3520" y="608" width="96" height="32"/>
+  <object x="2528" y="640" width="448" height="32"/>
  </objectgroup>
 </map>

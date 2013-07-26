@@ -5,6 +5,8 @@ An open-source, easy to use, fast tile engine for Corona SDK.
 
 Written by Caleb Place of Gymbyl Coding and Michael Wilson of No. 2 Games
 
+Version 0.7.1
+
 www.no2games.org
 www.gymbyl.com
 --]]
@@ -42,24 +44,16 @@ if physics then addBody=physics.addBody else addBody=function() print("physics.a
 --------------------------------------------------------------------------------
 -- Miscellaneous Functions
 --------------------------------------------------------------------------------
-local function multiply(t, m1, m2) local nt={} for i=1, #t, 2 do nt[i]=t[i]*m1 nt[i+1]=t[i+1]*m2 end return nt end
+local function multiplyPolygon(t, m1, m2) local nt={} for i=1, #t, 2 do nt[i]=t[i]*m1 nt[i+1]=t[i+1]*m2 end return nt end
 local function strRight(str,pattern) local s,e=str:find(pattern) local ret if e then ret=str:sub(e+1) return ret~="" and ret or nil end return nil end
-local function isNumeric(str) return tonumber(str) and true or false  end
-local function getCenterPointOfPoints(points) local pointsSum={x=0, y=0} for i=1, #points do pointsSum.x=pointsSum.x+points[i].x; pointsSum.y=pointsSum.y+points[i].y end return {x=pointsSum.x/#points, y=pointsSum.y/#points} end
-local function getIsLess(a, b) local center=pointsCenterPoint if a.x>=0 and b.x<0 then return true elseif a.x==0 and b.x==0 then return a.y>b.y end local det=(a.x-center.x)*(b.y-center.y)-(b.x-center.x)*(a.y-center.y) if det<0 then return true elseif det > 0 then return false end local d1=(a.x-center.x)*(a.x-center.x)+(a.y-center.y)*(a.y-center.y) local d2=(b.x-center.x)*(b.x-center.x)+(b.y-center.y)*(b.y-center.y) return d1>d2 end
-local function sortPointsClockwise(points) local centerPoint=getCenterPointOfPoints(points) table.sort(points, getIsLess) return points end
-local function saveTable(t, filename) local path=system.pathForFile(filename, system.DocumentsDirectory) local file=io.open(path, "w") if file then local contents=json.encode(t) file:write(contents) io.close(file) return true else return false end end
-local function getFile(filename, base) if not base then base=system.ResourceDirectory; end local path=system.pathForFile(filename, base) local contents local file=io.open(path, "r") if file then contents=file:read("*a") io.close(file) end return contents end
-local function loadTilesets(data) local data=data local tilesets=data.tilesets local tileRef={} local tileStack={} tileStack.n=1 for i=1, #tilesets do tileStack[tileStack.n]={} tileStack[tileStack.n].tilewidth=tilesets[i].tilewidth tileStack[tileStack.n].tileheight=tilesets[i].tileheight tileStack[tileStack.n].image=tilesets[i].image tileStack[tileStack.n].imagewidth=tilesets[i].imagewidth tileStack[tileStack.n].imageheight=tilesets[i].imageheight tileStack[tileStack.n].numCol=math.floor(tileStack[tileStack.n].imagewidth/tileStack[tileStack.n].tilewidth) tileStack[tileStack.n].numRow=math.floor(tileStack[tileStack.n].imageheight/tileStack[tileStack.n].tileheight) tileStack[tileStack.n].numFrames=tileStack[tileStack.n].numCol*tileStack[tileStack.n].numRow tileStack[tileStack.n].sheet=graphics.newImageSheet(tileStack[tileStack.n].image, {width=tileStack[tileStack.n].tilewidth, height=tileStack[tileStack.n].tileheight, numFrames=tileStack[tileStack.n].numFrames}) for l=1, tileStack[tileStack.n].numFrames do tileRef[#tileRef+1]={tileset=tilesets[i], sheet=tileStack[tileStack.n].sheet, frame=l, data={start=1, count=tileStack[tileStack.n].numFrames}} end tileStack.n=tileStack.n+1 end return tileStack, tileRef end
 local function tprint(t) if Ceramic.showPrints then local t=t or " " local message="" for i=1, tabLevel do message=message.."  " end message=message..t print(message) end end
 local function clamp(v, l, h) if v<l then return l elseif v>h then return h else return v end end
-local function convertProperties(p) local tileProperties={physics={}, tile={}, layer={}} for k, v in pairs(p) do if v=="true" or v=="false" then v=(v=="true" and true) or false elseif isNumeric(v) then v=tonumber(v) end local ref=k:sub(1, k:find("s:")) local title=strRight(k, "s:") if ref=="physics" then tileProperties.physics[title]=v elseif ref=="tiles" then tileProperties.tile[title]=v elseif ref=="layer" then tileProperties.layer[title]=v end end return tileProperties end
 local function getFileContents(filename, base) local base=base or system.ResourceDirectory local path=system.pathForFile(filename, base) local contents local file=io.open(path, "r") if file then contents=file:read("*a") io.close(file) file=nil end return contents end
 local function clipTable(t, max) if #t>max then for i=#t, max+1, -1 do t[i]=nil end end return t end
 local function isPolyClockwise(pointList) local area=0 for i=1, #pointList-2, 2 do local pointStart={x=pointList[i]-pointList[1], y=pointList[i+1]-pointList[2]} local pointEnd={x=pointList[i+2]-pointList[1], y=pointList[i+3]-pointList[2]} area=area+(pointStart.x*-pointEnd.y)-(pointEnd.x*-pointStart.y) end return (area<0) end
-local function reverse(t) local nt={} for i=1, #t, 2 do nt[#nt+1]=t[#t-i] nt[#nt+1]=t[#t-i+1] end return nt end
+local function reversePolygonPolygon(t) local nt={} for i=1, #t, 2 do nt[#nt+1]=t[#t-i] nt[#nt+1]=t[#t-i+1] end return nt end
 local function toV(value) local v if value=="true" or value=="false" then if value=="true" then v=true else v=false end elseif value:match("[+-]?%d+%.?[%d]+")==value then v=tonumber(value) elseif value:match("^!json!") then v=json.decode(value:sub(7)) else if value:sub(1,1)=="\"" and value:sub(-1)=="\"" then v=value:sub(2, -2) else v=value end end return v end
-local function getObjectLayerProperties(data) local p={options={physicsExistent=false}, physics={}, objects={}, layer={}} local insertionTable for key, value in pairs(data) do local k, v if key:match("^physics:") then insertionTable=p.physics k=key:sub(9) elseif key:match("^objects:") then insertionTable=p.objects k=key:sub(9) else insertionTable=p.layer if key:match("^layer:") then k=key:sub(7) end end  v=toV(value)  if k=="enabled" and insertionTable==p.physics then if v==true then p.options.physicsExistent=true end else insertionTable[k]=v end end return p end
+local function getObjectLayerProperties(data) local p={options={physicsExistent=false}, physics={}, objects={}, layer={}} local insertionTable for key, value in pairs(data) do local k, v if key:match("^physics:") then insertionTable=p.physics k=key:sub(9) elseif key:match("^objects:") then insertionTable=p.objects k=key:sub(9) else insertionTable=p.layer if key:match("^layer:") then k=key:sub(7) else k=key end end  v=toV(value)  if k=="enabled" and insertionTable==p.physics then if v==true then p.options.physicsExistent=true end else insertionTable[k]=v end end return p end
 local function getObjProperties(data) local p={options={}, physics={}, object={}} local insertionTable for key, value in pairs(data) do local k, v if key:match("^physics:") then insertionTable=p.physics k=key:sub(9) else insertionTable=p.object k=key end v=toV(value) if k=="enabled" and insertionTable==p.physics then if v==true then p.options.physicsExistent=true elseif v==false then p.options.physicsExistent=false end else insertionTable[k]=v end end return p end
 local function getTileLayerProperties(data) local p={options={}, physics={}, tile={}, layer={}} local insertionTable for key, value in pairs(data) do local k, v if key:match("^physics:") then insertionTable=p.physics k=key:sub(9) elseif key:match("^tiles:") then insertionTable=p.tile k=key:sub(7) else insertionTable=p.layer if key:match("^layer:") then k=key:sub(7) else k=key end end v=toV(value) if k=="enabled" and insertionTable==p.physics then if v==true then p.options.physicsExistent=true end else insertionTable[k]=v end end return p end
 local function fnn(...) for i=1, #arg do if arg[i]~=nil then return arg[i] end end end
@@ -110,9 +104,12 @@ Ceramic.drawPrefs={
 	lineColor={255, 255, 255, 255} -- Color of test build lines
 }
 Ceramic.autoSortShapePoints=true -- Automatically reverse anti-clockwise shapes
-Ceramic.showPrints=false -- Show debug and info messages
+Ceramic.showPrints=true -- Show debug and info messages
 Ceramic.buildForTesting=false -- Show object layers
 Ceramic.baseDirectory=system.ResourcesDirectory -- Where map files are located
+Ceramic.detectMapPath=false -- Use map file directory as root for tileset searches
+Ceramic.enableTileCulling=true -- Use tile culling or not
+
 
 --------------------------------------------------------------------------------
 -- generateMap()
@@ -122,9 +119,24 @@ Ceramic.baseDirectory=system.ResourcesDirectory -- Where map files are located
 local function generateMap(mapFile, useBasic)
 	tprint("Generating Map: \""..mapFile.."\""); tprint()
 	local mapData=loadFileData(mapFile, Ceramic.baseDirectory)
+
+	local directoryPath=""
+
+	if Ceramic.detectMapPath then
+		local f1, f2=mapFile:find("(/.+)$") -- Find actual file name (myDirectory/map.lua -> map.lua)
+
+		directoryPath=mapFile:sub(1, f1)
+	end
+
 	if not mapData then return nil end
 	local map=display.newGroup()
 	map.layer={}
+	map.viewBounds={
+		xMin=0,
+		yMin=0,
+		xMax=display.contentWidth,
+		yMax=display.contentHeight
+	}
 	
 	local sheets={} -- Tileset sheets
 	local frames={} -- Tileset frame data
@@ -142,20 +154,19 @@ local function generateMap(mapFile, useBasic)
 		mapWidth=mapData.width,
 		tileHeight=mapData.tileheight,
 		tileWidth=mapData.tilewidth,
+		multTileWidth=0,
+		multTileHeight=0,
 		pixelHeight=mapData.tileheight/display.contentScaleY,
 		pixelWidth=mapData.tilewidth/display.contentScaleX,
 		scaledTileHeight=0,
 		scaledTileWidth=0,
 		contentZoomY=0,
-		contentZoomX=0,
-		leftTile=0,
-		rightTile=0,
-		topTile=0,
-		bottomTile=0
+		contentZoomX=0
 	}
 	
 	data.scaledTileHeight=math_floor(data.pixelHeight)*display.contentScaleY
 	data.scaledTileWidth=math_floor(data.pixelWidth)*display.contentScaleX
+
 	data.contentZoomY=data.scaledTileHeight/data.tileHeight
 	data.contentZoomX=data.scaledTileWidth/data.tileWidth
 	
@@ -166,6 +177,7 @@ local function generateMap(mapFile, useBasic)
 	tprint("Tileset Count: "..data.tilesetCount)
 	tprint("Map Dimensions: "..data.mapWidth.." by "..data.mapHeight.." t")
 	tprint("Tile Dimensions: "..data.tileWidth.." by "..data.tileHeight.." px"); tabLevel=tabLevel-1
+	tprint("Zoom: "..data.contentZoomX..", "..data.contentZoomY)
 	tprint()
 	
 	map._mapData=mapData
@@ -212,7 +224,7 @@ local function generateMap(mapFile, useBasic)
 				start=1,
 				count=0
 			},
-			image=mapData.tilesets[i].image:match("[%w%s_\\/-]+%.%w+$"),
+			image=directoryPath..mapData.tilesets[i].image:match("[%w%s_\\/-]+%.%w+$"),
 			margin=mapData.tilesets[i].margin,
 			spacing=mapData.tilesets[i].spacing,
 			tileheight=mapData.tilesets[i].tileheight,
@@ -230,8 +242,8 @@ local function generateMap(mapFile, useBasic)
 		tprint("Margin: "..options.margin.." px")
 		tprint("Spacing: "..options.spacing.." px")
 		
-		options.tilesetWidth=math_ceil((options.sheet.sheetContentWidth-options.margin*2-options.spacing)/(options.tilewidth+options.spacing)) 		
-		options.tilesetHeight=math_ceil((options.sheet.sheetContentHeight-options.margin*2-options.spacing)/(options.tileheight+options.spacing))
+		options.tilesetWidth=math_floor((options.sheet.sheetContentWidth-options.margin*2-options.spacing)/(options.tilewidth+options.spacing)) 		
+		options.tilesetHeight=math_floor((options.sheet.sheetContentHeight-options.margin*2-options.spacing)/(options.tileheight+options.spacing))
 		
 		tprint("Tileset Dimensions: "..options.tilesetWidth.." by "..options.tilesetHeight.." t")
 
@@ -279,7 +291,7 @@ local function generateMap(mapFile, useBasic)
 		local layer
 		local props
 		
-		if mapData.layers[i].type=="tilelayer" and not (mapData.layers[i].properties or {})["!!!inactive!!!"] then
+		if mapData.layers[i].type=="tilelayer" and not (mapData.layers[i].properties or {})["!inactive!"] then
 			props=getTileLayerProperties(mapData.layers[i].properties or {})
 			tprint("Type: Tile Layer")
 			tprint("Name: \""..mapData.layers[i].name.."\"")
@@ -298,7 +310,7 @@ local function generateMap(mapFile, useBasic)
 
 			setmetatable(layer.tile, tile_mt)
 
-			if not useBasic then
+			if (not useBasic) and (Ceramic.enableTileCulling) then
 				layer._locked={}
 
 				local render={}
@@ -311,8 +323,8 @@ local function generateMap(mapFile, useBasic)
 					render.renderMarginB=1
 					render.renderOffsetX=1
 					render.renderOffsetY=1
-					render.visibleX=math.ceil(display.contentWidth/data.scaledTileWidth*layer.xScale)
-					render.visibleY=math.ceil(display.contentHeight/data.scaledTileHeight*layer.yScale)
+					render.visibleX=math_ceil(map.viewBounds.xMax/data.scaledTileWidth*layer.xScale)
+					render.visibleY=math_ceil(map.viewBounds.yMax/data.scaledTileHeight*layer.yScale)
 					render.leftPixel=0
 					render.topPixel=0
 					render.left=1
@@ -330,8 +342,8 @@ local function generateMap(mapFile, useBasic)
 				end
 
 				function layer.resetVisible()
-					render.visibleX=math.ceil((display.contentWidth/(data.tileWidth*layer.xScale*map.xScale)))
-					render.visibleY=math.ceil((display.contentHeight/(data.tileHeight*layer.yScale*map.yScale)))
+					render.visibleX=math_ceil((map.viewBounds.xMax/(data.tileWidth*layer.xScale*map.xScale)))
+					render.visibleY=math_ceil((map.viewBounds.yMax/(data.tileHeight*layer.yScale*map.yScale)))
 				end
 
 
@@ -402,8 +414,9 @@ local function generateMap(mapFile, useBasic)
 						end
 					end
 
+
 					render.pX=x; render.pY=y
-				end
+				end -- if not useBasic
 
 				--------------------------------------------------------------------------
 				-- layer.setLock()
@@ -459,7 +472,8 @@ local function generateMap(mapFile, useBasic)
 										
 										local tile=newSprite(sheets[reference[1]], frames[reference[1]])
 										tile:setFrame(reference[2])
-										tile.x, tile.y=(x-0.5)*data.tileWidth, (y-0.5)*data.tileHeight
+										tile.xScale, tile.yScale=data.scaledTileWidth/tile.width, data.scaledTileHeight/tile.height
+										tile.x, tile.y=(x-0.5)*data.scaledTileWidth, (y-0.5)*data.scaledTileHeight
 										
 										local tileProps
 
@@ -560,11 +574,11 @@ local function generateMap(mapFile, useBasic)
 						obj=newCircle(layer, zx, zy, zh*0.5); obj.xScale=(zw/zh)
 					end
 						
-					obj.x, obj.y=zx+(zw*0.5), zy+(zh*0.5)	
+					obj.x, obj.y=(zx+(zw*0.5))*data.contentZoomX, (zy+(zh*0.5))*data.contentZoomY
 					
 					if objProps.options.physicsExistent then
 						if Ceramic.useEllipseShape then
-							objProps.physics.shape=multiply(ellipseShape, zw/ellipseSize, zh/ellipseSize)
+							objProps.physics.shape=multiplyPolygon(ellipseShape, zw/ellipseSize, zh/ellipseSize)
 						else
 							objProps.physics.radius=((zh+zw)*0.5)*0.5
 						end
@@ -587,7 +601,7 @@ local function generateMap(mapFile, useBasic)
 
 					if object.polygon then obj:append(point[1].x, point[1].y) end
 					
-					obj.x, obj.y=object.x, object.y
+					obj.x, obj.y=object.x*data.contentZoomX, object.y*data.contentZoomY
 					
 					if objProps.options.physicsExistent then
 						objProps.physics.shape={}
@@ -598,12 +612,12 @@ local function generateMap(mapFile, useBasic)
 						end
 						
 						if Ceramic.autoSortShapePoints then
-							tprint("Checking for Anti-Clockwise Shape")
+							tprint("Checking for anti-clockwise shape")
 							if not isPolyClockwise(objProps.physics.shape) then
-								objProps.physics.shape=reverse(objProps.physics.shape)
-								tprint("Shape was Reversed")
+								objProps.physics.shape=reversePolygon(objProps.physics.shape)
+								tprint("Shape was reversed")
 							else
-								tprint("Shape is Already Clockwise")
+								tprint("Shape is already clockwise")
 							end
 						end
 						
@@ -619,7 +633,7 @@ local function generateMap(mapFile, useBasic)
 					
 					obj=newSprite(sheets[reference[1]], frames[reference[1]])
 					obj:setFrame(reference[2])
-					obj.x, obj.y=object.x+(data.tileWidth*0.5), object.y-(data.tileHeight*0.5)
+					obj.x, obj.y=(object.x+(data.tileWidth*0.5))*data.contentZoomX, (object.y-(data.tileHeight*0.5))*data.contentZoomX
 									
 					if objProps.options.physicsExistent then
 						addBody(obj, objProps.physics.bodyType or "static", objProps.physics)
@@ -630,7 +644,7 @@ local function generateMap(mapFile, useBasic)
 					tprint("Dimensions: "..object.width.." by "..object.height.." px")
 					tprint("X, Y: ("..object.x..", "..object.y..")")
 					
-					obj=newRect(object.x, object.y, object.width, object.height)
+					obj=newRect(object.x*data.contentZoomX, object.y*data.contentZoomY, object.width, object.height)
 					
 					if objProps.options.physicsExistent then
 						addBody(obj, objProps.physics.bodyType or "static", objProps.physics)
@@ -642,6 +656,7 @@ local function generateMap(mapFile, useBasic)
 
 				obj._name=(mapData.layers[i].objects[o].name~="" and mapData.layers[i].objects[o].name or mapData.layers[i].objects[o].type..o)
 				obj._type=mapData.layers[i].objects[o].type
+
 				if obj._type=="" then
 					if props.objects._type then
 						obj._type=props.objects._type
@@ -666,8 +681,10 @@ local function generateMap(mapFile, useBasic)
 				end
 
 				layer:insert(obj)
+
 				layer.object[obj._name]=obj
-				
+				layer.object[o]=obj
+
 				tabLevel=tabLevel-1
 			end
 			tabLevel=tabLevel-1
@@ -686,7 +703,7 @@ local function generateMap(mapFile, useBasic)
 			function layer.render() end
 		end -- mapData.layers[i].type==
 		
-		if not (mapData.layers[i].properties or {})["!!!inactive!!!"] then
+		if not (mapData.layers[i].properties or {})["!inactive!"] then
 			for k, v in pairs(props.layer) do layer[k]=v end
 			
 			layer.isVisible=mapData.layers[i].visible
@@ -695,8 +712,9 @@ local function generateMap(mapFile, useBasic)
 			tprint("Opacity: "..tostring(layer.alpha))
 
 			layer.trackingEnabled=(props.layer.trackingEnabled==nil and true) or props.layer.trackingEnabled
-			layer.xParallax=(props.layer.xParallax==nil and 1) or props.layer.xParallax
-			layer.yParallax=(props.layer.yParallax==nil and 1) or props.layer.yParallax
+			layer.xParallax=props.layer.xParallax or props.layer.parallax or 1
+			layer.yParallax=props.layer.yParallax or props.layer.parallax or 1
+			
 			layer._type=mapData.layers[i].type
 			table.insert(map.layer, layer)
 			map.layer[layer._name]=layer
@@ -730,18 +748,23 @@ function Ceramic.buildMap(mapFile, useBasic)
 				0, map("mapWidth")*map("tileWidth"),
 				0, map("mapHeight")*map("tileHeight")
 			},
-			focus={}
+			focus={},
+			movementRatio=1
 		}
 
-		visibleX=math.ceil(display.contentWidth/map("tileWidth")*map.xScale)
-		visibleY=math.ceil(display.contentHeight/map("tileHeight")*map.yScale)
+		visibleX=math_ceil(map.viewBounds.xMax/map("tileWidth")*map.xScale)
+		visibleY=math_ceil(map.viewBounds.yMax/map("tileHeight")*map.yScale)
 
 		function map.resetVisible()
-			visibleX=math.ceil(display.contentWidth/map("tileWidth")*map.xScale)
-			visibleY=math.ceil(display.contentWidth/map("tileHeight")*map.yScale)
+			visibleX=math_ceil(map.viewBounds.xMax/map("tileWidth")*map.xScale)
+			visibleY=math_ceil(map.viewBounds.yMax/map("tileHeight")*map.yScale)
 			for i=1, map("layerCount") do
 				if map.layer[i] and map.layer[i]._type=="tilelayer" then map.layer[i].resetVisible() end
 			end
+		end
+
+		function map.setCameraDamping(d)
+			view.movementRatio=1/d
 		end
 
 		------------------------------------------------------------------------------
@@ -756,24 +779,24 @@ function Ceramic.buildMap(mapFile, useBasic)
 				if view.focus["toFront"] then view.focus:toFront() end
 				local targetX, targetY
 
-				if view.focus.x<=view.bounds[2] and view.focus.x>=view.bounds[1] then
-					targetX=-view.focus.x
-				elseif view.focus.x>view.bounds[2] then
-					targetX=-view.bounds[2]
-				elseif view.focus.x<view.bounds[1] then
-					targetX=-view.bounds[1]
+				if view.focus.x<=view.bounds[2]*map("contentZoomX") and view.focus.x>=view.bounds[1]*map("contentZoomX") then
+					targetX=-view.focus.x*map("contentZoomX")
+				elseif view.focus.x>view.bounds[2]*map("contentZoomX") then
+					targetX=-view.bounds[2]*map("contentZoomX")
+				elseif view.focus.x<view.bounds[1]*map("contentZoomX") then
+					targetX=-view.bounds[1]*map("contentZoomX")
 				end
 
-				if view.focus.y<=view.bounds[4] and view.focus.y>=view.bounds[3] then
-					targetY=-view.focus.y
-				elseif view.focus.y>view.bounds[4] then
-					targetY=-view.bounds[4]
-				elseif view.focus.y<view.bounds[3] then
-					targetY=-view.bounds[3]
+				if view.focus.y<=view.bounds[4]*map("contentZoomY") and view.focus.y>=view.bounds[3]*map("contentZoomY") then
+					targetY=-view.focus.y*map("contentZoomY")
+				elseif view.focus.y>view.bounds[4]*map("contentZoomY") then
+					targetY=-view.bounds[4]*map("contentZoomY")
+				elseif view.focus.y<view.bounds[3]*map("contentZoomY") then
+					targetY=-view.bounds[3]*map("contentZoomY")
 				end
 
-				targetX=display.contentCenterX+targetX
-				targetY=display.contentCenterY+targetY
+				targetX=display.contentCenterX*map("contentZoomX")+targetX
+				targetY=display.contentCenterY*map("contentZoomY")+targetY
 
 				map.viewX=targetX
 				map.viewY=targetY
@@ -847,8 +870,8 @@ function Ceramic.buildMap(mapFile, useBasic)
 
 			for i=1, map("layerCount") do
 				if map.layer[i] and map.layer[i].trackingEnabled then
-					map.layer[i].x=X*map.layer[i].xParallax
-					map.layer[i].y=Y*map.layer[i].yParallax
+					map.layer[i].x=((map.layer[i].x-(map.layer[i].x-X)*view.movementRatio)*map.layer[i].xParallax)
+					map.layer[i].y=(map.layer[i].y-(map.layer[i].y-Y)*view.movementRatio)*map.layer[i].yParallax
 					map.layer[i].render(map.layer[i].x, map.layer[i].y)
 				end
 			end
@@ -911,11 +934,48 @@ function Ceramic.buildMap(mapFile, useBasic)
 			end
 		end
 	end
+
+
+	------------------------------------------------------------------------------
+	--[[
+	map.tilesToPixels()
+
+	Converts tile coordinates into pixel coordinates.
+	--]]
+	------------------------------------------------------------------------------
+	function map.tilesToPixels(x, y)
+		local x=x
+		local y=y
+
+		if type(x)=="table" then
+			x, y=x[1], x[2]
+		end
+
+		return x*map("tileWidth"), y*map("tileHeight")
+	end
 	
-	if not useBasic then
+
+	------------------------------------------------------------------------------
+	--[[
+	Draw Tiles
+
+	Draw all tiles if tile culling is disabled, or visible tiles if tile culling
+	is enabled.
+	--]]
+	------------------------------------------------------------------------------
+	if not Ceramic.enableTileCulling then
+		tprint("Drawing All")
+		map.draw(1, map("mapWidth"), 1, map("mapHeight"))
+
+		for i=1, #map.layer do
+			map.layer[i].render=function() end
+		end
+	elseif not useBasic then
 		map.draw(1, visibleX, 1, visibleY)
 		map.render()
-	else
+		tprint("Drawing Visible Tiles")
+	elseif useBasic then
+		tprint("Drawing All")
 		map.draw(1, map("mapWidth"), 1, map("mapHeight"))
 	end
 

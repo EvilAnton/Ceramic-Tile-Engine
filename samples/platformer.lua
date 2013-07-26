@@ -6,9 +6,11 @@ Demonstrates:
 	- Implementing physics into Tiled maps (object physics)
 	- Identifying single objects from a layer
 	- Camera system
+	- Parallax ratios
 	- Connecting player and map
 
-Sample Version 1.0
+Sample Version 1.1
+Last Update: Updated for parallax and camera damping
 --]]
 
 return function()
@@ -18,13 +20,15 @@ return function()
 	require("physics")
 	physics.start()
 	physics.setScale(140)
-	--physics.setDrawMode("hybrid")
+	physics.setDrawMode("hybrid")
 
 	local bkg=display.newRect(0, 0, display.contentWidth, display.contentHeight) -- Build rect to cover background
 	bkg:setFillColor(255, 0, 255)
 
 	local ceramic=require("Ceramic")
 	local map=ceramic.buildMap("maps/platformer.json")
+	
+	map.setCameraDamping(10) -- Give a bit of fluidity to the movement
 
 	------------------------------------------------------------------------------
 	-- Create Player
@@ -42,8 +46,7 @@ return function()
 	player.linearDamping=1
 	player.canMove=true
 
-	player.x=map.layer["objects"].object["playerSpawn"].x
-	player.y=map.layer["objects"].object["playerSpawn"].y
+	player.x, player.y=map.tilesToPixels(map.layer["layer_1"].playerSpawnPosition)
 
 	map.layer["layer_1"]:insert(player)
 
@@ -52,7 +55,7 @@ return function()
 	------------------------------------------------------------------------------
 	function player:collision(event)
 		if "began"==event.phase then
-			if event.other._type=="ground" and event.selfElement==2 then -- Sensor object created in Tiled
+			if event.other.collisionType=="platform" and event.selfElement==2 then -- Sensor object created in Tiled
 				player.grounded=player.grounded+1
 			elseif event.other._type=="pipe" and event.selfElement==2 then
 				player.canMove=false
@@ -79,7 +82,7 @@ return function()
 										onComplete=function()
 											player.isBodyActive=true
 											player.canMove=true
-											player:applyLinearImpulse(0.001, -0.003)
+											player:applyLinearImpulse(0, -0.006)
 										end
 									})
 								end
@@ -91,7 +94,7 @@ return function()
 			
 			end
 		elseif "ended"==event.phase then
-			if event.other._type=="ground" and event.selfElement==2 then
+			if event.other.collisionType=="platform" and event.selfElement==2 then
 				player.grounded=player.grounded-1
 			end
 		end

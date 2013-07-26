@@ -1,7 +1,7 @@
 Ceramic Tile Engine (CoronaTiled)
 =================================
 
-An opensource, easy to use, fast [Corona SDK](http://www.coronalabs.com) project to load JSON and Lua map files saved from [Tiled](http://www.mapeditor.org).
+An opensource, easy to use [Corona SDK](http://www.coronalabs.com) project to load JSON and Lua map files saved from [Tiled](http://www.mapeditor.org).
 
 ##### Authors: #####
 * Michael Wilson of [No. 2 Games](http://www.no2games.com)
@@ -29,16 +29,12 @@ local map = ceramic.buildMap("directory/mapName.json")
 ##### Snippets #####
 You can find snippets/mini-libraries [here](http://github.com/GymbylCoding/CeramicSnippets)
 
-##### 0.7 Update Info: #####
-* Complete code overhaul
-* Camera system
-* Tile culling
-* New samples
+##### 0.7.1 Update Info: #####
+* Added Ceramic flags:
+	* `detectMapPath`
+	* `enableTileCulling`
+* Added camera damping; simply use `map.setCameraDamping` to set
 * Bug fixes
-* Various miscellaneous updates
-* Per-object physics
-* Per-tile physics
-* Include JSON tables in properties with `!json!`
 
 ##### Update History: #####
 
@@ -48,7 +44,8 @@ You can find snippets/mini-libraries [here](http://github.com/GymbylCoding/Ceram
 * 0.4 - Load a map region & tile properties including shapes
 * 0.5 - Bug fixes & sprite layers
 * 0.6 - First GUI release and "tile gap" fix
-* 0.7 - See update info
+* 0.7 - Complete code overhaul
+	* 0.7.1 - Various improvements
 
 ##### Features: #####
 * Unlimited layers

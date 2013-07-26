@@ -9,9 +9,9 @@ v1.0
 --------------------------------------------------------------------------------
 -- Miscellaneous Loading
 --------------------------------------------------------------------------------
-display.setStatusBar( display.HiddenStatusBar )
-display.setDefault("minTextureFilter", "linear")
-display.setDefault("magTextureFilter", "linear")
+display.setStatusBar(display.HiddenStatusBar)
+display.setDefault("minTextureFilter", "nearest")
+display.setDefault("magTextureFilter", "nearest")
 
 local cleanUp
 local widget=require("widget")
@@ -67,3 +67,5 @@ for i=1, #data do
 	}
 	b[i].x, b[i].y=display.contentCenterX, i*b[i].height
 end
+
+data[5][2]()
