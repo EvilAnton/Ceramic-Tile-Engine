@@ -5,7 +5,7 @@ An open-source, easy to use, fast tile engine for Corona SDK.
 
 Written by Caleb Place of Gymbyl Coding and Michael Wilson of No. 2 Games
 
-Version 0.7.1
+Version 0.7.1-b
 
 www.no2games.org
 www.gymbyl.com
@@ -123,9 +123,9 @@ local function generateMap(mapFile, useBasic)
 	local directoryPath=""
 
 	if Ceramic.detectMapPath then
-		local f1, f2=mapFile:find("(/.+)$") -- Find actual file name (myDirectory/map.lua -> map.lua)
+		local f1, f2=mapFile:find("[%w%s_\\-]-.%w+$") -- Find actual file name (myDirectory/map.lua -> map.lua)
 
-		directoryPath=mapFile:sub(1, f1)
+		directoryPath=mapFile:sub(1, f1-1)
 	end
 
 	if not mapData then return nil end
