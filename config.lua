@@ -1,7 +1,7 @@
 application = {
     content = {
-        width = 320,
-        height = 480,
+        width = 768,
+        height = 1024,
         xAlign = "center",
         yAlign = "center",
         fps = 60
